@@ -1,7 +1,75 @@
 import java.util.Scanner;
+import java.util.Random;
 
 public class Aventura {
-    public static void main (String[] args) {
+
+    public static void mostrarInventario(int[] inventario, int canPociones) {
+        System.out.println("===== INVENTARIO =====");
+
+        System.out.println("Armas disponibles:");
+        System.out.println("1. Daga");
+        System.out.println("2. Espada larga");
+        System.out.println("3. Espadón");
+
+        System.out.println("Pociones disponibles: " + canPociones);
+
+        for (int i = 0; i < canPociones; i++) {
+            System.out.println("Poción " + (i + 1) + ": Cura " + inventario[i] + " HP");
+        }
+    }
+
+    public static int calcularDaño(Armas arma) {
+        int dañoMin = arma.getDañoMin();
+        int dañoMax = arma.getDañoMax();
+        return (int) (Math.random() * (dañoMax - dañoMin + 1) + dañoMin);
+    }
+
+    public static void intentarHuir() {
+        System.out.println("Intentas corre hacia el lado contrario.");
+        System.out.println("Te resbalas y caes al suelo, el enemigo se acerca a ti y te ataca.");
+    }
+
+    public static boolean empezarCombate(Scanner sc, Enemigos enemigo, Armas arma) {
+        System.out.println("El enemigo te esta mirando");
+        int vida = 100;
+        int canPociones = 3;
+
+        while (vida > 0 && enemigo.getVida() > 0) {
+            System.out.println("--COMBATE--");
+            System.out.println("Tu vida: " + vida);
+            System.out.println("Vida del enemigo: " + enemigo.getVida());
+            System.out.println("¿Que quieres hacer?");
+            System.out.println("1. Atacar");
+            System.out.println("2. Usar poción");
+            System.out.println("3. Intentar huir");
+            int accion = sc.nextInt();
+            if (accion == 1) {
+                int daño = calcularDaño(arma);
+                enemigo.setVida(enemigo.getVida() - daño);
+                System.out.println("Hiciste " + daño + " de daño al enemigo, su vida actual es " + enemigo.getVida());
+            }
+            if (accion == 2) {
+                if (canPociones > 0) {
+                    System.out
+                            .println("Has usado un poción, tu vida actual es " + vida + " te has curado un 25 de vida");
+                }
+                vida += 25;
+                canPociones--;
+                if (vida > 100) {
+                    vida = 100;
+                    System.out.println("Ya tienes vida maáxima, no puedes usar más pociones.");
+                }
+
+                if (accion == 3) {
+                    intentarHuir();
+                } else {
+                    System.out.println("Opción inválida, el enemigo te ataca.");
+                }
+            }
+        }
+    }
+
+    public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
 
         Enemigos enemigo1 = new Enemigos("Soldado de Godrick", 40, 5, 15);
@@ -12,10 +80,11 @@ public class Aventura {
         int opcion = 0;
         String nombre = "";
         int vida = 100;
+        int[] inventario = { 25, 25, 25 };
         int canPociones = 3;
-        Armas arma1 = new Armas("Daga", "Ligera", 8, 13);
-        Armas arma2 = new Armas("Espada larga", "Mediana", 12, 17);
-        Armas arma3 = new Armas("Espadón", "Pesada", 15, 20);
+        Armas arma1 = new Armas("Daga", "Ligera", 8, 12, 0);
+        Armas arma2 = new Armas("Espada larga", "Mediana", 12, 14, 20);
+        Armas arma3 = new Armas("Espadón", "Pesada", 15, 20, 40);
 
         while (opcion != 5) {
 
@@ -29,8 +98,7 @@ public class Aventura {
             System.out.print("4. Ver Ranking");
             System.out.println("5. Salir");
             opcion = sc.nextInt();
-        if (opcion == 1)
-            {
+            if (opcion == 1) {
                 System.out.println("Empezando la aventura...");
                 System.out.println(nombre + " tienes " + vida + " de vida y " + canPociones + " pociones.");
                 System.out.println("¿Que arma deseas usar?");
@@ -39,11 +107,14 @@ public class Aventura {
                 System.out.println("3. Espadón");
                 int arma = sc.nextInt();
                 if (arma == 1) {
-                    System.out.println("Has elegido la " + arma1.getNombre() + ", tu daño será de " + arma1.getDañoMin() + " a " + arma1.getDañoMax() + " y nunca fallará.");
+                    System.out.println("Has elegido la " + arma1.getNombre() + ", tu daño será de " + arma1.getDañoMin()
+                            + " a " + arma1.getDañoMax() + " y nunca fallará.");
                 } else if (arma == 2) {
-                    System.out.println("Has elegido la " + arma2.getNombre() + ", tu daño será de " + arma2.getDañoMin() + " a " + arma2.getDañoMax() + " y tiene una probabilidad de fallar.");
+                    System.out.println("Has elegido la " + arma2.getNombre() + ", tu daño será de " + arma2.getDañoMin()
+                            + " a " + arma2.getDañoMax() + " y tiene una probabilidad de fallar.");
                 } else if (arma == 3) {
-                    System.out.println("Has elegido el " + arma3.getNombre() + ", tu daño será de " + arma3.getDañoMin() + " a " + arma3.getDañoMax() + " y tiene una gran probabilidad de fallar.");
+                    System.out.println("Has elegido el " + arma3.getNombre() + ", tu daño será de " + arma3.getDañoMin()
+                            + " a " + arma3.getDañoMax() + " y tiene una gran probabilidad de fallar.");
                 } else {
                     System.out.println("Opción inválida, se te asignará la Daga por defecto.");
                 }
@@ -54,40 +125,40 @@ public class Aventura {
                     System.out.println("2. Usar poción");
                     System.out.println("3. Sentar en la hoguera");
                     int accion = sc.nextInt();
-                    
-            }
 
-        if (opcion == 2)
-            {
-                System.out.println("Inventario");
-                System.out.println("Tu inventario contiene:");
-                System.out.println("1. Daga");
-                System.out.println("2. Espada larga");
-                System.out.println("3. Espadón");
-                System.out.println("4. Tienes " + canPociones + " pociones");
+                    if (accion == 1) {
+                        System.out.println("Has encontrado un enemigo: " + enemigo1.getNombre());
+                        empezarCombate(sc, enemigo1, arma1);
+                    }
+
+                }
+
+                if (opcion == 2) {
+                    mostrarInventario(inventario, canPociones);
+                }
+                if (opcion == 3) {
+                    System.out.print("Ayuda");
+                    System.out.println("¿Como funciona el juego?");
+                    System.out.println(
+                            "El juego consiste en un combate por turnos, donde tu personaje y el enemigo se atacan hasta que uno de los dos pierda toda su vida.");
+                    System.out.println("¿Como puedo recuperar vida?");
+                    System.out.println(
+                            "Podrás recuperar vida usando pociones limitas, trás cada combate podrás recuperar tus pociones y tu vida descansando en una hoguera");
+                    System.out.println("¿Como puedo ganar el juego?");
+                    System.out.println(
+                            "Para ganar el juego deberás derrotar a todos los enemigos y llegar al final del juego, donde te espera un gran enemigo final.");
+                }
+                if (opcion == 4) {
+                    System.out.println("Ranking");
+                    System.out.println("1. Jugador 1 - 100 puntos");
+                    System.out.println("2. Jugador 2 - 90 puntos");
+                    System.out.println("3. Jugador 3 - 80 puntos");
+                }
+                if (opcion == 5) {
+                    System.out.println("Gracias por jugar, hasta la próxima!");
+                }
             }
-        if (opcion == 3)
-            {
-                System.out.print("Ayuda");
-                System.out.println("¿Como funciona el juego?");
-                System.out.println("El juego consiste en un combate por turnos, donde tu personaje y el enemigo se atacan hasta que uno de los dos pierda toda su vida.");
-                System.out.println("¿Como puedo recuperar vida?");
-                System.out.println("Podrás recuperar vida usando pociones limitas, trás cada combate podrás recuperar tus pociones y tu vida descansando en una hoguera");
-                System.out.println("¿Como puedo ganar el juego?");
-                System.out.println("Para ganar el juego deberás derrotar a todos los enemigos y llegar al final del juego, donde te espera un gran enemigo final.");
-            }
-        if (opcion == 4)
-            {
-                System.out.println("Ranking");
-                System.out.println("1. Jugador 1 - 100 puntos");
-                System.out.println("2. Jugador 2 - 90 puntos");
-                System.out.println("3. Jugador 3 - 80 puntos");
-            }
-        if (opcion == 5) 
-            {
-                System.out.println("Gracias por jugar, hasta la próxima!");
-            }
+            sc.close();
         }
-        sc.close();
     }
 }
