@@ -19,9 +19,29 @@ public class Aventura {
     }
 
     public static int calcularDaño(Armas arma) {
+        Random random = new Random();
+        int probabilidadFallo = arma.getProbabilidadFallo();
+        int golpear = random.nextInt(100);
+        if (golpear < probabilidadFallo) {
+            System.out.println("¡Fallaste el ataque!");
+            return 0;
+        }
+        
+        else {
+            System.out.println("Golpeaste al enemigo");
+        }
         int dañoMin = arma.getDañoMin();
         int dañoMax = arma.getDañoMax();
-        return (int) (Math.random() * (dañoMax - dañoMin + 1) + dañoMin);
+        int dañoTotal = random.nextInt(dañoMax - dañoMin + 1) + dañoMin;
+        return dañoTotal;
+    }
+
+    public static int calcularDañoEnemigo(Enemigos enemigo) {
+        Random random = new Random();
+        int dañoMin = enemigo.getDañoMin();
+        int dañoMax = enemigo.getDañoMax();
+        int dañoTotalEnemigo = random.nextInt(dañoMax - dañoMin + 1) + dañoMin;
+        return dañoTotalEnemigo;
     }
 
     public static void intentarHuir() {
@@ -73,18 +93,20 @@ public class Aventura {
         Scanner sc = new Scanner(System.in);
 
         Enemigos enemigo1 = new Enemigos("Soldado de Godrick", 40, 5, 15);
-        Enemigos enemigo2 = new Enemigos("Semihumano", 40, 5, 15);
-        Enemigos enemigo3 = new Enemigos("Caballero desterrado", 60, 5, 15);
-        Enemigos enemigo4 = new Enemigos("Margit", 80, 5, 15);
-        Enemigos enemigo5 = new Enemigos("Godrick", 80, 5, 15);
+        Enemigos enemigo2 = new Enemigos("Caballero desterrado", 60, 5, 15);
+        Enemigos enemigo3 = new Enemigos("Godrick", 80, 5, 15);
+
         int opcion = 0;
         String nombre = "";
         int vida = 100;
         int[] inventario = { 25, 25, 25 };
         int canPociones = 3;
+
         Armas arma1 = new Armas("Daga", "Ligera", 8, 12, 0);
         Armas arma2 = new Armas("Espada larga", "Mediana", 12, 14, 20);
         Armas arma3 = new Armas("Espadón", "Pesada", 15, 20, 40);
+
+        Armas[] armas = {arma1, arma2, arma3};
 
         while (opcion != 5) {
 
