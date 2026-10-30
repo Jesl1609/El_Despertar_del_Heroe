@@ -1,8 +1,30 @@
-
 import java.util.Scanner;
 import java.util.Random;
 
 public class Aventura {
+        
+        static int vida = 100;
+        static int canPociones = 3;
+
+        public static void limpiarPantalla() {
+            System.out.print("\033[H\033[2J");
+            System.out.flush();
+        }
+
+        public static void pausa(Scanner sc) {
+            System.out.println("Pulsa Enter para continuar...");
+            sc.nextLine();
+            sc.nextLine();
+        }
+
+    public static void mostrarMenu() {
+        System.out.println("===== MENÚ PRINCIPAL =====");
+        System.out.println("1. Empezar la aventura");
+        System.out.println("2. Ver inventario");
+        System.out.println("3. Ayuda");
+        System.out.println("4. Ver Ranking");
+        System.out.println("5. Salir");
+    }
 
     public static void mostrarInventario(int[] inventario, int canPociones) {
         System.out.println("===== INVENTARIO =====");
@@ -34,6 +56,9 @@ public class Aventura {
         int dañoMin = arma.getDañoMin();
         int dañoMax = arma.getDañoMax();
         int dañoTotal = random.nextInt(dañoMax - dañoMin + 1) + dañoMin;
+        if (dañoTotal <= 0) {
+            System.out.println("El enemigo te ha esquivado");
+        }
         return dañoTotal;
     }
 
@@ -52,8 +77,6 @@ public class Aventura {
 
     public static boolean empezarCombate(Scanner sc, Enemigos enemigo, Armas arma) {
         System.out.println("El enemigo te está mirando");
-        int vida = 100;
-        int canPociones = 3;
 
         while (vida > 0 && enemigo.getVida() > 0) {
             System.out.println("=====COMBATE=====");
@@ -68,7 +91,12 @@ public class Aventura {
             if (accion == 1) {
                 int daño = calcularDaño(arma);
                 enemigo.setVida(enemigo.getVida() - daño);
-                System.out.println("Hiciste " + daño + " de daño al enemigo, su vida actual es " + enemigo.getVida());
+                if (daño > 0){
+                System.out.println("Hiciste " + daño + " de daño al enemigo");
+                }
+                if (daño <= 0){
+                    System.out.println("Has fallado el ataque");
+                }
             } else if (accion == 2) {
                 if (canPociones > 0) {
                     vida += 25;
@@ -124,6 +152,13 @@ public class Aventura {
         }
     }
 
+    public static void mostrarMenuAventura() {
+        System.out.println("¿Qué quieres hacer?");
+                    System.out.println("1. Caminar");
+                    System.out.println("2. Usar poción");
+                    System.out.println("3. Sentarte en la hoguera");
+    }
+
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
 
@@ -141,21 +176,19 @@ public class Aventura {
         Armas arma2 = new Armas("Espada larga", "Mediana", 12, 14, 20);
         Armas arma3 = new Armas("Espadón", "Pesada", 15, 20, 40);
 
-        Armas[] armas = { arma1, arma2, arma3 };
 
+        limpiarPantalla();
         System.out.println("Bienvenido a la Tierra Intermedia");
         System.out.println("¿Cómo te llamas?");
         nombre = sc.nextLine();
+        limpiarPantalla();
 
         while (opcion != 5) {
-
-            System.out.println("Hola " + nombre + ", ¿Qué deseas hacer?");
-            System.out.println("1. Empezar la aventura");
-            System.out.println("2. Ver inventario");
-            System.out.println("3. Ayuda");
-            System.out.println("4. Ver Ranking");
-            System.out.println("5. Salir");
+            limpiarPantalla();
+            mostrarMenu();
+            System.out.println("Selecciona una opción:");
             opcion = sc.nextInt();
+            limpiarPantalla();
 
             if (opcion == 1) {
                 System.out.println("Empezando la aventura...");
@@ -183,27 +216,100 @@ public class Aventura {
                     System.out.println("Opción inválida, se te asignará la Daga por defecto.");
                 }
 
+                pausa(sc);
+                limpiarPantalla();
+                
                 while (vida > 0) {
-                    System.out.println("Bienvenido a las tierras intermedias, " + nombre + ", tu aventura empieza aquí");
-                    System.out.println("¿Qué quieres hacer?");
-                    System.out.println("1. Caminar");
-                    System.out.println("2. Usar poción");
-                    System.out.println("3. Sentarte en la hoguera");
+                    System.out.println("Bienvenido a las tierras intermedias, " + nombre + " que quieres hacer?");
+                    mostrarMenuAventura();
                     int accion = sc.nextInt();
 
                     if (accion == 1) {
+                        limpiarPantalla();
                         System.out.println("Has encontrado un enemigo: " + enemigo1.getNombre());
                         boolean resultadoCombate = empezarCombate(sc, enemigo1, armaElegida);
 
                         if (resultadoCombate == true) {
                             System.out.println("Has derrotado al enemigo puedes seguir tu jornada");
                         }
+                        pausa(sc);
+                        limpiarPantalla();
+                    }
+                    if (accion == 2) {
+                        curarFueraCombate(vida, canPociones);
+                    }
+                    if (accion == 3) {
+                        curarHoguera(vida, canPociones);
+                    }
+                    if (enemigo1.getVida() <= 0) {
+                        System.out.println("Has derrotado al enemigo " + enemigo1.getNombre() + "!");
+                        pausa(sc);
+                        limpiarPantalla();
+                        System.out.println("Has encontrado un enemigo: " + enemigo2.getNombre());
+                        boolean resultadoCombate = empezarCombate(sc, enemigo2, armaElegida);
+
+                        if (resultadoCombate == true) {
+                            System.out.println("Has derrotado al enemigo puedes seguir tu jornada");
+                        }
+                        pausa(sc);
+                        limpiarPantalla();
+                    }
+                } 
+                
+    
+                while (vida > 0); {
+                    System.out.println("¿Que quieres hacer?");
+                    mostrarMenuAventura();
+                    limpiarPantalla();
+                    int accion = sc.nextInt();
+                    if (accion == 1) {
+                        limpiarPantalla();
+                        System.out.println ("Has encontrado un enemigo " + enemigo2.getNombre());
+                        boolean resultadoCombate2 = empezarCombate(sc, enemigo2, armaElegida);
+                        if (resultadoCombate2 == true) {
+                                System.out.println("Has derrotado " + enemigo2.getNombre());
+                        }
+                        pausa(sc);
+                        limpiarPantalla();
+                    }
+                    if (accion == 2) {
+                        curarFueraCombate(vida, canPociones);
+                    }
+                    if (accion == 3) {
+                        curarHoguera(vida, canPociones);
                     }
                 }
-
-            } else if (opcion == 2) {
+                
+                while (vida > 0) {
+                    System.out.println("¿Que Quieres hacer?");
+                    mostrarMenuAventura();
+                    int accion = sc.nextInt();
+                    if (accion == 1) {
+                        limpiarPantalla();
+                        System.out.println ("Has encontrado un enemigo " + enemigo3.getNombre());
+                        boolean resultadoCombate3 = empezarCombate(sc, enemigo3, armaElegida);
+                        if (resultadoCombate3 == true) {
+                            System.out.println("Has derrotado al enemigo puedes seguir tu jornada");
+                        }
+                        pausa(sc);
+                        limpiarPantalla();
+                    }
+                    if (accion == 2) {
+                        curarFueraCombate(vida, canPociones);
+                    }
+                    if (accion == 3) {
+                        curarHoguera(vida, canPociones);
+                    }
+                }
+            }
+            if (opcion == 2) {
+                limpiarPantalla();
                 mostrarInventario(inventario, canPociones);
-            } else if (opcion == 3) {
+                pausa(sc);
+            }
+
+            if (opcion == 3) {
+                limpiarPantalla();
                 System.out.println("Ayuda");
                 System.out.println("¿Cómo funciona el juego?");
                 System.out.println(
@@ -214,15 +320,19 @@ public class Aventura {
                 System.out.println("¿Cómo puedo ganar el juego?");
                 System.out.println(
                         "Para ganar el juego deberás derrotar a todos los enemigos y llegar al final del juego, donde te espera un gran enemigo final.");
-            } else if (opcion == 4) {
+                pausa(sc);
+                }
+                if (opcion == 4) {
+                limpiarPantalla();
                 System.out.println("Ranking");
                 System.out.println("1. Jugador 1 - 100 puntos");
                 System.out.println("2. Jugador 2 - 90 puntos");
                 System.out.println("3. Jugador 3 - 80 puntos");
-            } else if (opcion == 5) {
+                pausa(sc);
+            }if (opcion == 5) {
                 System.out.println("Gracias por jugar, hasta la próxima!");
             }
         }
-        sc.close();
+         sc.close();
     }
 }
