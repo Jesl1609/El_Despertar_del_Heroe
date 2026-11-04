@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE ranking SYSTEM "ranking.dtd">
+<ranking>
+    <jugador>
+        <nombre>EMM</nombre>
+        <puntuacion>380</puntuacion>
+    </jugador>
+    <jugador>
+        <nombre>JESL</nombre>
+        <puntuacion>345</puntuacion>
+    </jugador>
+    <jugador>
+        <nombre>LEO &amp; MAX</nombre>
+        <puntuacion>345</puntuacion>
+    </jugador>
+    <jugador>
+        <nombre>IMD</nombre>
+        <puntuacion>200</puntuacion>
+    </jugador>
+    <jugador>
+        <nombre>PBM</nombre>
+        <puntuacion>100</puntuacion>
+    </jugador>
+    <jugador>
+        <nombre>FITO</nombre>
+        <puntuacion>0</puntuacion>
+    </jugador>
+</ranking>
