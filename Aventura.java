@@ -18,6 +18,7 @@ public class Aventura {
     }
 
     public static void mostrarMenu() {
+        System.out.println("===== ELDEN RING =====");
         System.out.println("===== MENÚ PRINCIPAL =====");
         System.out.println("1. Empezar la aventura");
         System.out.println("2. Ver inventario");
@@ -35,7 +36,7 @@ public class Aventura {
         System.out.println("3. Espadón");
 
         System.out.println("Pociones disponibles: " + canPociones);
-
+        
         for (int i = 0; i < canPociones; i++) {
             System.out.println("Poción " + (i + 1) + ": Cura " + inventario[i] + " HP");
         }
@@ -152,12 +153,15 @@ public class Aventura {
         }
     }
 
+
     public static void mostrarMenuAventura() {
         System.out.println("¿Qué quieres hacer?");
         System.out.println("1. Caminar");
         System.out.println("2. Usar poción");
         System.out.println("3. Sentarte en la hoguera");
     }
+
+    //Sistema de Combate
 
     public static boolean fase(Scanner sc, Enemigos enemigo, Armas armaElegida) {
         while (vida > 0 && enemigo.getVida() > 0) {
@@ -166,7 +170,7 @@ public class Aventura {
 
             if (accion == 1) {
                 limpiarPantalla();
-                System.out.println("Has encontrado a un enemigo" + enemigo.getNombre());
+                System.out.println("Has encontrado a un enemigo " + enemigo.getNombre());
                 boolean victoria = empezarCombate(sc, enemigo, armaElegida);
                 pausa(sc);
                 limpiarPantalla();
@@ -188,12 +192,13 @@ public class Aventura {
         return false;
     }
 
+    public static void trampa() {
+        System.out.println ("¡Has caído en una trampa! Pierdes 10 de vida.");
+        vida -= 10;
+    }
+
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
-
-        Enemigos enemigo1 = new Enemigos("Soldado de Godrick", 40, 5, 15);
-        Enemigos enemigo2 = new Enemigos("Caballero desterrado", 60, 5, 15);
-        Enemigos enemigo3 = new Enemigos("Godrick", 80, 5, 15);
 
         int opcion = 0;
         String nombre = "";
@@ -203,6 +208,7 @@ public class Aventura {
         Armas arma3 = new Armas("Espadón", "Pesada", 15, 20, 40);
 
         limpiarPantalla();
+        System.out.println("===== ELDEN RING =====");
         System.out.println("Bienvenido a la Tierra Intermedia");
         System.out.println("¿Cómo te llamas?");
         nombre = sc.nextLine();
@@ -216,6 +222,13 @@ public class Aventura {
             limpiarPantalla();
 
             if (opcion == 1) {
+                // Reiniciar partida
+                vida = 100;
+                canPociones = 3;
+                Enemigos enemigo1 = new Enemigos("Soldado de Godrick", 40, 5, 15);
+                Enemigos enemigo2 = new Enemigos("Caballero desterrado", 60, 5, 15);
+                Enemigos enemigo3 = new Enemigos("Godrick", 80, 5, 15);
+
                 System.out.println("Empezando la aventura...");
                 System.out.println(nombre + " tienes " + vida + " de vida y " + canPociones + " pociones.");
                 System.out.println("¿Qué arma deseas usar?");
@@ -244,19 +257,57 @@ public class Aventura {
                 pausa(sc);
                 limpiarPantalla();
 
-                // Primer Combate
+                // Primer combate
                 if (fase(sc, enemigo1, armaElegida)) {
                     System.out.println("¡Enhorabuena por tu primera victoria, " + nombre + "!");
+                    System.out.println("Las puertas del Castillo de Velo Tormentoso se abren. ¿Quieres entrar?");
+                    System.out.println("1. Sí");
+                    System.out.println("2. No");
+                    int entrada = sc.nextInt();
 
-                    if (fase(sc, enemigo2, armaElegida)) {
+                    if (entrada == 1) {
+                        System.out.println("Has entrado al castillo, avanzas por los pasillos hasta que...");
+                        trampa();
+                        System.out.println("Tu vida actual es: " + vida);
+                        if (vida <= 0) {
+                            System.out.println("La trampa ha acabado contigo. Has perdido la partida.");
+                        } else {
+                            System.out.println("En el pasillo principal notas una presencia enfrente de ti: es un caballero.");
+                        }
+                        pausa(sc);
+                        limpiarPantalla();
+                    } else {
+                        System.out.println("Decides no entrar y rodeas el castillo. Encuentras un pasaje secreto.");
+                        System.out.println("Avanzas por el pasaje y ves una silueta al fondo.");
+                        pausa(sc);
+                        limpiarPantalla();
+                    }
+
+                    // Segundo combate (las dos rutas llegan aquí)
+                    if (vida > 0 && fase(sc, enemigo2, armaElegida)) {
                         System.out.println("¡Segunda victoria! Te espera Godrick...");
+                        System.out.println("Mientras avanzas por el castillo, te encuentras con dos pasillos. Ambos llevan a la sala del trono, pero uno tiene un olor extraño. ¿Qué pasillo eliges?");
+                        System.out.println("1. Pasillo izquierdo");
+                        System.out.println("2. Pasillo derecho");
+                        int pasillo = sc.nextInt();
 
-                        if (fase(sc, enemigo3, armaElegida)) {
-                            System.out.println("¡Has derrotado a Godrick! Has ganado el juego.");
+                        if (pasillo == 1) {
+                            System.out.println("Avanzas con cautela hasta la sala del trono. Godrick te espera, se acerca y te ataca.");
+                            if (fase(sc, enemigo3, armaElegida)) {
+                                System.out.println("====Victoria====");
+                                System.out.println("¡Has derrotado a Godrick! Has ganado el juego.");
+                            }
+                        } else {
+                            System.out.println("El pasillo te lleva hacia unas escaleras, escuchas un ruido raro hasta que...");
+                            System.out.println("Una bola de piedra gigante rueda por las escaleras hacia ti y te da de lleno. Has muerto.");
+                            vida = 0;
+                            pausa(sc);
                         }
                     }
                 }
-                pausa(sc);
+                // Pausa final de la aventura (un solo Enter)
+                System.out.println("Pulsa Enter para volver al menú...");
+                sc.nextLine();
             }
 
             if (opcion == 2) {
@@ -280,6 +331,7 @@ public class Aventura {
                         "Para ganar el juego deberás derrotar a todos los enemigos y llegar al final del juego, donde te espera un gran enemigo final.");
                 pausa(sc);
             }
+
             if (opcion == 4) {
                 limpiarPantalla();
                 System.out.println("Ranking");
@@ -288,6 +340,7 @@ public class Aventura {
                 System.out.println("3. Jugador 3 - 80 puntos");
                 pausa(sc);
             }
+
             if (opcion == 5) {
                 System.out.println("Gracias por jugar, hasta la próxima!");
             }
