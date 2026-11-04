@@ -5,6 +5,10 @@ public class Aventura {
     // METODOS
     static int vida = 100;
     static int canPociones = 3;
+    static int turnos = 0;
+    static int danoRecibido;
+    static int puntos;
+
 
     public static void limpiarPantalla() {
         System.out.print("\033[H\033[2J");
@@ -80,9 +84,11 @@ public class Aventura {
         System.out.println("El enemigo te está mirando");
 
         while (vida > 0 && enemigo.getVida() > 0) {
+            turnos++;
             System.out.println("=====COMBATE=====");
             System.out.println("Tu vida: " + vida);
             System.out.println("Vida del enemigo: " + enemigo.getVida());
+            System.out.println("Tienes " + canPociones + " pociones");
             System.out.println("¿Qué quieres hacer?");
             System.out.println("1. Atacar");
             System.out.println("2. Usar poción");
@@ -123,6 +129,7 @@ public class Aventura {
 
             int dañoEnemigo = calcularDañoEnemigo(enemigo);
             vida -= dañoEnemigo;
+            danoRecibido += dañoEnemigo;   
             System.out.println(enemigo.getNombre() + " te ha hecho " + dañoEnemigo + " de daño.");
 
             if (vida <= 0) {
@@ -193,15 +200,17 @@ public class Aventura {
     }
 
     public static void trampa() {
-        System.out.println ("¡Has caído en una trampa! Pierdes 10 de vida.");
-        vida -= 10;
+        System.out.println ("¡Has caído en una trampa! Pierdes 25 de vida.");
+        int dañoTrampa = 25;
+        vida -= dañoTrampa;
+        danoRecibido += 25;
     }
 
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
-
         int opcion = 0;
         String nombre = "";
+
 
         Armas arma1 = new Armas("Daga", "Ligera", 8, 12, 0);
         Armas arma2 = new Armas("Espada larga", "Mediana", 12, 14, 20);
@@ -222,12 +231,15 @@ public class Aventura {
             limpiarPantalla();
 
             if (opcion == 1) {
-                // Reiniciar partida
                 vida = 100;
                 canPociones = 3;
-                Enemigos enemigo1 = new Enemigos("Soldado de Godrick", 40, 5, 15);
-                Enemigos enemigo2 = new Enemigos("Caballero desterrado", 60, 5, 15);
-                Enemigos enemigo3 = new Enemigos("Godrick", 80, 5, 15);
+                turnos = 0;
+                danoRecibido = 0;
+                puntos = 0;
+
+                Enemigos enemigo1 = new Enemigos("Soldado de Godrick", 40, 8, 20);
+                Enemigos enemigo2 = new Enemigos("Caballero desterrado", 60, 10, 20);
+                Enemigos enemigo3 = new Enemigos("Godrick", 80, 15, 20);
 
                 System.out.println("Empezando la aventura...");
                 System.out.println(nombre + " tienes " + vida + " de vida y " + canPociones + " pociones.");
@@ -272,7 +284,7 @@ public class Aventura {
                         if (vida <= 0) {
                             System.out.println("La trampa ha acabado contigo. Has perdido la partida.");
                         } else {
-                            System.out.println("En el pasillo principal notas una presencia enfrente de ti: es un caballero.");
+                            System.out.println("En el pasillo principal notas una presencia enfrente de ti, es un caballero.");
                         }
                         pausa(sc);
                         limpiarPantalla();
@@ -296,6 +308,9 @@ public class Aventura {
                             if (fase(sc, enemigo3, armaElegida)) {
                                 System.out.println("====Victoria====");
                                 System.out.println("¡Has derrotado a Godrick! Has ganado el juego.");
+                                puntos += 300;
+                                puntos += Math.max(0, 500 - turnos * 10);
+                                System.out.println("Tus puntuaje final es " + puntos);
                             }
                         } else {
                             System.out.println("El pasillo te lleva hacia unas escaleras, escuchas un ruido raro hasta que...");
