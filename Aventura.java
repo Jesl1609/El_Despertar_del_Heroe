@@ -8,7 +8,7 @@ public class Aventura {
     static int turnos = 0;
     static int danoRecibido;
     static int puntos;
-
+    static Armas armaElegida;
 
     public static void limpiarPantalla() {
         System.out.print("\033[H\033[2J");
@@ -40,7 +40,7 @@ public class Aventura {
         System.out.println("3. Espadón");
 
         System.out.println("Pociones disponibles: " + canPociones);
-        
+
         for (int i = 0; i < canPociones; i++) {
             System.out.println("Poción " + (i + 1) + ": Cura " + inventario[i] + " HP");
         }
@@ -80,6 +80,7 @@ public class Aventura {
         System.out.println("Te resbalas y caes al suelo, el enemigo se acerca a ti y te ataca.");
     }
 
+    // Menu para el combate
     public static boolean empezarCombate(Scanner sc, Enemigos enemigo, Armas arma) {
         System.out.println("El enemigo te está mirando");
 
@@ -92,7 +93,9 @@ public class Aventura {
             System.out.println("¿Qué quieres hacer?");
             System.out.println("1. Atacar");
             System.out.println("2. Usar poción");
-            System.out.println("3. Intentar huir");
+            System.out.println("3. Inventario");
+            System.out.println("4. Intentar huir");
+            System.out.println("5. Salir del juego");
             int accion = sc.nextInt();
 
             if (accion == 1) {
@@ -117,7 +120,17 @@ public class Aventura {
                     System.out.println("No te quedan pociones.");
                 }
             } else if (accion == 3) {
+                int[] inventario = { 25, 25, 25 };
+                mostrarInventario(inventario, canPociones);
+                pausa(sc);
+                limpiarPantalla();
+            } else if (accion == 4) {
                 intentarHuir();
+
+            } else if (accion == 5) {
+                System.out.println("Gracias por jugar!!!");
+                sc.close();
+                System.exit(0);
             } else {
                 System.out.println("Opción inválida, el enemigo te ataca.");
             }
@@ -129,7 +142,7 @@ public class Aventura {
 
             int dañoEnemigo = calcularDañoEnemigo(enemigo);
             vida -= dañoEnemigo;
-            danoRecibido += dañoEnemigo;   
+            danoRecibido += dañoEnemigo;
             System.out.println(enemigo.getNombre() + " te ha hecho " + dañoEnemigo + " de daño.");
 
             if (vida <= 0) {
@@ -146,7 +159,7 @@ public class Aventura {
         canPociones = 3;
     }
 
-    public static void curarFueraCombate(int vida, int canPociones) {
+    public static void curarFueraCombate() {
         if (canPociones > 0) {
             vida += 25;
             canPociones--;
@@ -160,7 +173,6 @@ public class Aventura {
         }
     }
 
-
     public static void mostrarMenuAventura() {
         System.out.println("¿Qué quieres hacer?");
         System.out.println("1. Caminar");
@@ -168,7 +180,7 @@ public class Aventura {
         System.out.println("3. Sentarte en la hoguera");
     }
 
-    //Sistema de Combate
+    // Sistema de Combate
 
     public static boolean fase(Scanner sc, Enemigos enemigo, Armas armaElegida) {
         while (vida > 0 && enemigo.getVida() > 0) {
@@ -185,7 +197,7 @@ public class Aventura {
             }
             if (accion == 2) {
                 limpiarPantalla();
-                curarFueraCombate(vida, canPociones);
+                curarFueraCombate();
                 pausa(sc);
                 limpiarPantalla();
             }
@@ -200,21 +212,56 @@ public class Aventura {
     }
 
     public static void trampa() {
-        System.out.println ("¡Has caído en una trampa! Pierdes 25 de vida.");
+        System.out.println("¡Has caído en una trampa! Pierdes 25 de vida.");
         int dañoTrampa = 25;
         vida -= dañoTrampa;
         danoRecibido += 25;
+    }
+
+    // Clase
+    public static void elegirClases(Scanner sc) {
+        System.out.println("Elige tu clase:");
+        System.out.println("1. Guerrero");
+        System.out.println("2. Astrólogo");
+        System.out.println("3. Profeta");
+        int opcion = sc.nextInt();
+
+        if (opcion == 2) {
+            Astrologo astrologo = new Astrologo("Astrólogo", 50, 20, 16, 80);
+            armaElegida = astrologo.getBaston();
+            System.out.println("Eres un Astrólogo. Tu arma es: " + armaElegida.getNombre());
+
+        } else if (opcion == 3) {
+            Profeta profeta = new Profeta("Profeta", 40, 16, 10, 100);
+            armaElegida = profeta.getSello();
+            System.out.println("Eres un Profeta. Tu arma es: " + armaElegida.getNombre());
+
+        } else {
+            if (opcion != 1) {
+                System.out.println("Opción inválida, serás Guerrero.");
+            }
+            Guerrero guerrero = new Guerrero("Guerrero", 0, 20, 10, 100);
+            System.out.println("Eres un Guerrero. ¿Qué arma quieres?");
+            System.out.println("1. Daga");
+            System.out.println("2. Espada larga");
+            System.out.println("3. Espadón");
+            int arma = sc.nextInt();
+
+            if (arma == 2) {
+                armaElegida = guerrero.getEspadaLarga();
+            } else if (arma == 3) {
+                armaElegida = guerrero.getEspadon();
+            } else {
+                armaElegida = guerrero.getDaga();
+            }
+            System.out.println("Has elegido: " + armaElegida.getNombre());
+        }
     }
 
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         int opcion = 0;
         String nombre = "";
-
-
-        Armas arma1 = new Armas("Daga", "Ligera", 8, 12, 0);
-        Armas arma2 = new Armas("Espada larga", "Mediana", 12, 14, 20);
-        Armas arma3 = new Armas("Espadón", "Pesada", 15, 20, 40);
 
         limpiarPantalla();
         System.out.println("===== ELDEN RING =====");
@@ -243,29 +290,8 @@ public class Aventura {
 
                 System.out.println("Empezando la aventura...");
                 System.out.println(nombre + " tienes " + vida + " de vida y " + canPociones + " pociones.");
-                System.out.println("¿Qué arma deseas usar?");
-                System.out.println("1. Daga");
-                System.out.println("2. Espada larga");
-                System.out.println("3. Espadón");
-                int arma = sc.nextInt();
-                Armas armaElegida = arma1;
-
-                if (arma == 1) {
-                    armaElegida = arma1;
-                    System.out.println("Has elegido la " + arma1.getNombre() + ", tu daño será de " + arma1.getDañoMin()
-                            + " a " + arma1.getDañoMax() + " y nunca fallará.");
-                } else if (arma == 2) {
-                    armaElegida = arma2;
-                    System.out.println("Has elegido la " + arma2.getNombre() + ", tu daño será de " + arma2.getDañoMin()
-                            + " a " + arma2.getDañoMax() + " y tiene una probabilidad de fallar.");
-                } else if (arma == 3) {
-                    armaElegida = arma3;
-                    System.out.println("Has elegido el " + arma3.getNombre() + ", tu daño será de " + arma3.getDañoMin()
-                            + " a " + arma3.getDañoMax() + " y tiene una gran probabilidad de fallar.");
-                } else {
-                    System.out.println("Opción inválida, se te asignará la Daga por defecto.");
-                }
-
+                elegirClases(sc);
+                
                 pausa(sc);
                 limpiarPantalla();
 
@@ -284,7 +310,8 @@ public class Aventura {
                         if (vida <= 0) {
                             System.out.println("La trampa ha acabado contigo. Has perdido la partida.");
                         } else {
-                            System.out.println("En el pasillo principal notas una presencia enfrente de ti, es un caballero.");
+                            System.out.println(
+                                    "En el pasillo principal notas una presencia enfrente de ti, es un caballero.");
                         }
                         pausa(sc);
                         limpiarPantalla();
@@ -298,23 +325,27 @@ public class Aventura {
                     // Segundo combate (las dos rutas llegan aquí)
                     if (vida > 0 && fase(sc, enemigo2, armaElegida)) {
                         System.out.println("¡Segunda victoria! Te espera Godrick...");
-                        System.out.println("Mientras avanzas por el castillo, te encuentras con dos pasillos. Ambos llevan a la sala del trono, pero uno tiene un olor extraño. ¿Qué pasillo eliges?");
+                        System.out.println(
+                                "Mientras avanzas por el castillo, te encuentras con dos pasillos. Ambos llevan a la sala del trono, pero uno tiene un olor extraño. ¿Qué pasillo eliges?");
                         System.out.println("1. Pasillo izquierdo");
                         System.out.println("2. Pasillo derecho");
                         int pasillo = sc.nextInt();
 
                         if (pasillo == 1) {
-                            System.out.println("Avanzas con cautela hasta la sala del trono. Godrick te espera, se acerca y te ataca.");
+                            System.out.println(
+                                    "Avanzas con cautela hasta la sala del trono. Godrick te espera, se acerca y te ataca.");
                             if (fase(sc, enemigo3, armaElegida)) {
                                 System.out.println("====Victoria====");
                                 System.out.println("¡Has derrotado a Godrick! Has ganado el juego.");
                                 puntos += 300;
                                 puntos += Math.max(0, 500 - turnos * 10);
-                                System.out.println("Tus puntuaje final es " + puntos);
+                                System.out.println("Tu puntuación final es " + puntos);
                             }
                         } else {
-                            System.out.println("El pasillo te lleva hacia unas escaleras, escuchas un ruido raro hasta que...");
-                            System.out.println("Una bola de piedra gigante rueda por las escaleras hacia ti y te da de lleno. Has muerto.");
+                            System.out.println(
+                                    "El pasillo te lleva hacia unas escaleras, escuchas un ruido raro hasta que...");
+                            System.out.println(
+                                    "Una bola de piedra gigante rueda por las escaleras hacia ti y te da de lleno. Has muerto.");
                             vida = 0;
                             pausa(sc);
                         }
